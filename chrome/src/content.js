@@ -1,5 +1,5 @@
 // define
-const IDENTIFY = 'my-fingerprint'
+const IDENTIFY = 'KuaLiu'
 
 const navigatorValues = {}
 const screenValues = {}
@@ -205,10 +205,10 @@ const loadDocScript = function (url) {
  */
 const init = async function () {
   const data = await dataPromise;
-  
-  if(!data[Mode.enable]){
-    return;
-  }
+  console.log("content_init")
+  // if(!data[Mode.enable]){
+  //   return;
+  // }
 
   sessionSeed = data[Mode.seed] % maxRandom;
 

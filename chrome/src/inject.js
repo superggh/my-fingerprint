@@ -1,5 +1,5 @@
 !function () {
-  const IDENTIFY = 'my-fingerprint'
+  const IDENTIFY = 'KuaLiu'
 
   // 代理状态
   const pTable = {}
@@ -54,6 +54,7 @@
   const listenMessage = function () {
     window.addEventListener('message', (ev) => {
       // if(ev.origin !== location.origin)return;
+      console.log("message",IDENTIFY)
       const data = ev.data?.[IDENTIFY]
       if (!data) return
       // 根据type执行不同代码

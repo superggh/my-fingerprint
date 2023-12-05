@@ -1,3 +1,4 @@
+// 线性同余（待修改）
 const seededRandom = function(seed, max, min) {
   max = max || 1;
   min = min || 0;
@@ -120,6 +121,10 @@ const randomHeight = function (seed) {
 }
 
 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+/**
+ * canvas噪音
+ * @param {number} seed 
+ */
 const randomNoise = function (seed) {
   let noise = "";
   for (let i = 0; i < 10; i++) {
@@ -128,4 +133,46 @@ const randomNoise = function (seed) {
     ++seed;
   }
   return noise;
+}
+
+/**
+ * audio噪音
+ * @param {number} seed 
+ * @returns {number}
+ */
+const randomAudioNoise = function (seed) {
+  // let noise = [];
+  // for (let i = 0; i < 20; i++) {
+  //   noise.push(seededRandom(seed + i))
+  // }
+  // return noise;
+  return seededRandom(seed)
+}
+
+const renderer_webgl_arr = [
+  'ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)',
+  'ANGLE (Intel(R) HD Graphics 630 Direct3D11 vs_5_0 ps_5_0)',
+  'ANGLE (Intel(R) UHD Graphics 620 Direct3D11 vs_5_0 ps_5_0)',
+  'ANGLE (AMD Radeon(TM) R5 Graphics Direct3D11 vs_5_0 ps_5_0)',
+  'ANGLE (NVIDIA GeForce RTX 2070 SUPER Direct3D11 vs_5_0 ps_5_0)',
+  'ANGLE (Intel, Intel(R) UHD Graphics 630 (0x00003E9B) Direct3D11 vs_5_0 ps_5_0, D3D11)',
+  'Mesa DRI Intel(R) HD Graphics 5500 (Broadwell GT2)',
+  'Mesa DRI Intel(R) UHD Graphics 630 (Coffeelake 3x8 GT2)',
+  'Mesa DRI Intel(R) Iris(R) Plus Graphics 640 (Kaby Lake GT3e)',
+  'AMD Radeon Pro 5300M OpenGL Engine',
+  'Intel(R) Iris(R) Plus Graphics OpenGL Engine',
+]
+
+/**
+ * 获取webgl渲染器随机值
+ */
+const randomWebGLRandom = function (seed) {
+  return renderer_webgl_arr[seed % renderer_webgl_arr.length];
+}
+
+const getProxyIP = async function () {
+  // 获取代理ip
+  const data = await fetch('https://api.ipify.org?format=json',{method: 'GET',})
+  .then(response => response.json())
+  return data.ip
 }

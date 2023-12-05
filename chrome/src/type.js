@@ -4,11 +4,12 @@ const Mode = {
   config: '2',
   basic: 'a',
   special: 'b',
+  ip: 'ip',
 }
 
-const Config = {
-  proxyNavigator: 0,
-  proxyScreen: 1,
+const Control = {
+  navigator: 0,
+  screen: 1,
 }
 
 const SelectOpt = {
@@ -16,6 +17,9 @@ const SelectOpt = {
   page: {k: '1', v: "根据标签页随机"},
   browser: {k: '2', v: "每次启动浏览器随机"},
   domain: {k: '3', v: "根据域名随机"},
+
+  localhost: {k: '10', v: "替换为127.0.0.1"},
+  proxy: {k: '11', v: "替换为代理公网ip"},
 }
 
 const timeOpt = [
@@ -85,4 +89,7 @@ const SpecialConf = {
   languages: 20,
   canvas: 21,
   timezone: 22,
+  audio: 23,
+  webgl: 24,
+  webrtc: 25,
 }

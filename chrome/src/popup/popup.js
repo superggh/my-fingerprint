@@ -1,4 +1,42 @@
 /**
+ * 发送消息到扩展
+ * @param {string} type
+ * @param {any} value
+ */
+const sendToEx = function (type, value) {
+  chrome.runtime.sendMessage({type, value})
+}
+
+/**
+ * 发送消息到标签
+ * @param {number} tabId
+ * @param {string} type
+ * @param {any} value
+ */
+const sendToTabs = function (tabId, type, value, option) {
+  return chrome.tabs.sendMessage(tabId, {type, value}, option)
+}
+
+/**
+ * 发送消息到标签的所有frame中
+ * @param {number} tabId
+ * @param {string} type
+ * @param {any?} value
+ * @param {{ok: (record: any)=>void, fail: (err: any)=>void}?} callbacks
+ */
+const sendToTabFrames = function (tabId, type, value, callbacks) {
+  chrome.webNavigation.getAllFrames({tabId}).then((frames) => {
+    for (let frame of frames) {
+      let frameId = frame.frameId;
+      const promise = sendToTabs(tabId, type, value, {frameId})
+      if(callbacks?.ok)promise.then(callbacks.ok)
+      if(callbacks?.fail)promise.catch(callbacks.fail)
+    }
+  })
+}
+
+
+/**
  * -----------------------------
  * ---------- storage ----------
  * -----------------------------
@@ -175,10 +213,10 @@ const regBasicUI = function (button, elem) {
 
 const regConfigUI = function (button, elem) {
   initDropDown(button, elem, (btn, el) => {
-    // regThreeSwitchBox('#config .basic.item', Config.basicRecord);
-    // regThreeSwitchBox('#config .special.item', Config.specialRecord);
-    regSwitchBox(el.querySelector('._navigator'), Config.proxyNavigator);
-    regSwitchBox(el.querySelector('._screen'), Config.proxyScreen);
+    // regThreeSwitchBox('#config .basic.item', Control.basicRecord);
+    // regThreeSwitchBox('#config .special.item', Control.specialRecord);
+    regSwitchBox(el.querySelector('._navigator'), Control.navigator);
+    regSwitchBox(el.querySelector('._screen'), Control.screen);
   })
 }
 
@@ -278,7 +316,10 @@ const regStartUI = function (selector) {
 const regSpecialUI = function (button, elem) {
   initDropDown(button, elem, (btn, el) => {
     initSpecialSelect(el.querySelector('._canvas'), SpecialConf.canvas, [SelectOpt.default, SelectOpt.page, SelectOpt.browser, SelectOpt.domain]);
+    initSpecialSelect(el.querySelector('._audio'), SpecialConf.audio, [SelectOpt.default, SelectOpt.page, SelectOpt.browser, SelectOpt.domain]);
+    initSpecialSelect(el.querySelector('._webgl'), SpecialConf.webgl, [SelectOpt.default, SelectOpt.page, SelectOpt.browser, SelectOpt.domain]);
     initTimeZoneSelect(el.querySelector('._time'), SpecialConf.timezone);
+    initSpecialSelect(el.querySelector('._webrtc'), SpecialConf.webrtc, [SelectOpt.default, SelectOpt.localhost, SelectOpt.proxy]);
   })
 }
 
@@ -409,23 +450,34 @@ const allRecords = new Proxy({}, {
 const bgInitActiveTabRecord = function () {
   // sum all record
   chrome.tabs.query({active: true, currentWindow: true}).then((tabs)=>{
-    let tabId = tabs[0].id;
-    // total all frame record
-    chrome.webNavigation.getAllFrames({tabId}).then((frames) => {
-      for (let frame of frames) {
-        let frameId = frame.frameId;
-        chrome.tabs.sendMessage(tabId, {type: 'record'}, {frameId})
-        .then((record) => {
-          if(!record)return;
-          sumRecord(record);
-        })
-        .catch(() => {
-        })
-      }
+    // let tabId = tabs[0].id;
+    // // total all frame record
+    // chrome.webNavigation.getAllFrames({tabId}).then((frames) => {
+    //   for (let frame of frames) {
+    //     let frameId = frame.frameId;
+    //     chrome.tabs.sendMessage(tabId, {type: 'record'}, {frameId})
+    //     .then((record) => {
+    //       if(!record)return;
+    //       sumRecord(record);
+    //     })
+    //     .catch(() => {
+    //     })
+    //   }
+    // })
+    sendToTabFrames(tabs[0].id, 'record', undefined, {
+      ok: (record) => {
+        if(!record)return;
+        sumRecord(record);
+      },
+      fail: () => {}
     })
   })
 }
 
+/**
+ * 累加
+ * @param {*} record 
+ */
 const sumRecord = function (record) {
   for(let key in record){
     let sc = allRecords[key];
@@ -443,6 +495,8 @@ const sumRecord = function (record) {
  */
 
 window.addEventListener('DOMContentLoaded', async () => {
+  sendToEx('re-ip')  // refresh public ip
+
   data = await dataPromise;
   // start
   regStartUI('.start');
@@ -455,7 +509,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // record
   regRecordUI('#record ._btn', '#record .drop-down');
   // about
-  regAboutUI('#about ._btn', '#about .drop-down') 
+  regAboutUI('#about ._btn', '#about .drop-down')
 });
 
 /**

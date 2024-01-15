@@ -113,9 +113,9 @@ const sendToBg = function (type, value) {
 if (cmd){
  
   sendToBg('getConfigBySid',profile_name)  
-  setTimeout(()=>{
-    window.location.href =  "https://app.kualiu.com/#/StartPage?url=StartPage&profile_name=" + profile_name +"&uid=" + uid + "&token=" + token
-  },1500)
+  // setTimeout(()=>{
+  //   window.location.href =  "https://app.kualiu.com/#/StartPage?url=StartPage&profile_name=" + profile_name +"&uid=" + uid + "&token=" + token
+  // },1000)
    
 }
  

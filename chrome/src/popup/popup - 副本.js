@@ -433,7 +433,7 @@ const regAboutUI = function (button, elem) {
     });
   })
 }
- 
+
 /**
  * -----------------------------
  * ---------- message ----------
@@ -499,17 +499,17 @@ window.addEventListener('DOMContentLoaded', async () => {
  
   data = await dataPromise;
   // start
-  // regStartUI('.start');
-  // // config
-  // regConfigUI('#config ._btn', '#config .drop-down');
-  // // basic
-  // regBasicUI('#basic ._btn', '#basic .drop-down');
-  // // special
-  // regSpecialUI('#special ._btn', '#special .drop-down');
-  // // record
-  // regRecordUI('#record ._btn', '#record .drop-down');
-  // // about
-  // regAboutUI('#about ._btn', '#about .drop-down')
+  regStartUI('.start');
+  // config
+  regConfigUI('#config ._btn', '#config .drop-down');
+  // basic
+  regBasicUI('#basic ._btn', '#basic .drop-down');
+  // special
+  regSpecialUI('#special ._btn', '#special .drop-down');
+  // record
+  regRecordUI('#record ._btn', '#record .drop-down');
+  // about
+  regAboutUI('#about ._btn', '#about .drop-down')
 });
 
 /**

@@ -22,7 +22,7 @@ async function getConfigBySid(sid) {
   }
 
 }
- 
+
 
 const Mode = {
   enable: '0',

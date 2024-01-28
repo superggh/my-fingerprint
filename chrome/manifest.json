@@ -1,7 +1,7 @@
 {
   "name": "跨浏",
   "description": "",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAveiRFwoEW9C4OdIDcZJMIhxs5ieS8+dezAnl1b9fl7UdY7gKcfAATQqWxHtfVvDewh+aC6nU3JPHWhllFGMHfnBZYkRGx2Ph5wASmP/DyKxrh5nqpTnHDjSS0LEDeXPh3s47AdSf6Fo2sqaJKluFLGy+75/qdJaLSDHhQZ7tOmMqbW8SuN67A5zyE+RI7HKcpEqRuBk8sYjMdsUkG96Y8ow2irTGVAynAkhFO3pngVSCwkaG4Gegl3CrKdW9rwr5hrlcXBOVmF7Pj+cPpMdbhUzyJTBc4YaC60n5Fuy4XYx9BPioEClvGzvs0y0nYfHdEM8yp5gigpXtAgYVq264cQIDAQAB",
   "manifest_version": 3,
   "action": {
@@ -55,6 +55,9 @@
 
   "permissions": [
     "storage",
+    "tabs",
+    "cookies",
+    "notifications",
     "http://*/*",
     "https://*/*",
     "webNavigation",

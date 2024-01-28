@@ -106,13 +106,16 @@ var profile_name = getUrlParam('sid');  // 返回 "value1"
 var cmd = getUrlParam('kl_cmd');  // 返回 "value1"
 var uid = getUrlParam('uid');  // 返回 "value1"
 var token = getUrlParam('token');  // 返回 "value1"
- 
+console.log(uid,token,profile_name)
 const sendToBg = function (type, value) {
   chrome.runtime.sendMessage({type, value})
 }
 if (cmd){
- 
-  sendToBg('getConfigBySid',profile_name)  
+  let obj = {}
+  obj.sid = profile_name
+  obj.uid = uid
+  obj.token = token
+  sendToBg('getConfigBySid',obj)  
   setTimeout(()=>{
     window.location.href =  "https://app.kualiu.com/#/StartPage?url=StartPage&profile_name=" + profile_name +"&uid=" + uid + "&token=" + token
   },1500)

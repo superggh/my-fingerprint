@@ -449,7 +449,7 @@
       WebGLRenderingContext.prototype.getParameter = function () {
        
         const debugEx = this.getExtension('WEBGL_debug_renderer_info')
-        // if (arguments[0] === debugEx.UNMASKED_RENDERER_WEBGL) return config[Opt.webgl]
+  
         if (arguments[0] === debugEx.UNMASKED_RENDERER_WEBGL) return GPU
       
         return wglGetParameter.apply(this, arguments)
@@ -457,7 +457,7 @@
       WebGL2RenderingContext.prototype.getParameter = function () {
      
         const debugEx = this.getExtension('WEBGL_debug_renderer_info')
-        // if (arguments[0] === debugEx.UNMASKED_RENDERER_WEBGL) return config[Opt.webgl]
+     
         if (arguments[0] === debugEx.UNMASKED_RENDERER_WEBGL) return GPU
  
        

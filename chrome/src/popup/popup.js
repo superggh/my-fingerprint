@@ -4,7 +4,7 @@
  * @param {any} value
  */
 const sendToEx = function (type, value) {
-  chrome.runtime.sendMessage({type, value})
+  chrome.runtime.sendMessage({ type, value })
 }
 
 /**
@@ -14,7 +14,7 @@ const sendToEx = function (type, value) {
  * @param {any} value
  */
 const sendToTabs = function (tabId, type, value, option) {
-  return chrome.tabs.sendMessage(tabId, {type, value}, option)
+  return chrome.tabs.sendMessage(tabId, { type, value }, option)
 }
 
 /**
@@ -25,12 +25,12 @@ const sendToTabs = function (tabId, type, value, option) {
  * @param {{ok: (record: any)=>void, fail: (err: any)=>void}?} callbacks
  */
 const sendToTabFrames = function (tabId, type, value, callbacks) {
-  chrome.webNavigation.getAllFrames({tabId}).then((frames) => {
+  chrome.webNavigation.getAllFrames({ tabId }).then((frames) => {
     for (let frame of frames) {
       let frameId = frame.frameId;
-      const promise = sendToTabs(tabId, type, value, {frameId})
-      if(callbacks?.ok)promise.then(callbacks.ok)
-      if(callbacks?.fail)promise.catch(callbacks.fail)
+      const promise = sendToTabs(tabId, type, value, { frameId })
+      if (callbacks?.ok) promise.then(callbacks.ok)
+      if (callbacks?.fail) promise.catch(callbacks.fail)
     }
   })
 }
@@ -79,11 +79,11 @@ const evRadioChange = function (radios, self, key) {
       tar.classList.remove('disable');
       tar.removeAttribute('disabled');
       let tName = tar.tagName?.toLowerCase();
-      if(key != undefined){
-        if(tName == 'select'){
-          basicStore[key] = {select: 0, value: tar.value};
-        }else if(tName == 'input'){
-          basicStore[key] = {select: 1, value: tar.value};
+      if (key != undefined) {
+        if (tName == 'select') {
+          basicStore[key] = { select: 0, value: tar.value };
+        } else if (tName == 'input') {
+          basicStore[key] = { select: 1, value: tar.value };
         }
       }
     } else {
@@ -114,7 +114,7 @@ const regBasicItem = function (pos_s, temp_s) {
     let conf = BasicData[key];
     let local = basicStoreData[key];
     let n_select = local?.select ?? 0;
-  
+
     // title
     let tmp = template.cloneNode(true);
     tmp.classList.remove('_temp');
@@ -127,11 +127,11 @@ const regBasicItem = function (pos_s, temp_s) {
       option.innerHTML = val.v;
       select.appendChild(option);
     }
-    if(local && n_select == 0)select.value = local.value;
+    if (local && n_select == 0) select.value = local.value;
     // diy input
     let input = tmp.querySelector('input.diy');
-    if(conf.hint)input.placeholder = conf.hint;
-    if(local && n_select == 1)input.value = local.value;
+    if (conf.hint) input.placeholder = conf.hint;
+    if (local && n_select == 1) input.value = local.value;
     // radio name and event
     let radios = tmp.querySelectorAll('input[type="radio"]');
     for (let i = 0; i < radios.length; ++i) {
@@ -147,10 +147,10 @@ const regBasicItem = function (pos_s, temp_s) {
     }
     // other event
     select.addEventListener('change', () => {
-      basicStore[key] = {select: 0, value: select.value}
+      basicStore[key] = { select: 0, value: select.value }
     });
     input.addEventListener('blur', () => {
-      basicStore[key] = {select: 1, value: input.value}
+      basicStore[key] = { select: 1, value: input.value }
     });
     node.appendChild(tmp);
   }
@@ -159,10 +159,10 @@ const regBasicItem = function (pos_s, temp_s) {
 
 const BasicData = {}
 const initBasicData = function () {
-  for(let k in BasicConf){
+  for (let k in BasicConf) {
     BasicData[BasicConf[k]] = {
       "title": k,
-      "options":[
+      "options": [
         SelectOpt.default, SelectOpt.page, SelectOpt.browser, SelectOpt.domain
       ]
     }
@@ -180,14 +180,14 @@ let prevDropDown;
 const initDropDown = function (button, elem, firstClickCall) {
   let btn = document.querySelector(button);
   let el = document.querySelector(elem);
-  if(!btn || !el)return;
+  if (!btn || !el) return;
   let first = true;
   btn.addEventListener('click', () => {
-    if(first && firstClickCall){
+    if (first && firstClickCall) {
       firstClickCall(btn, el);
       first = false;
     }
-    if(el !== prevDropDown){
+    if (el !== prevDropDown) {
       prevDropDown?.classList.add('disable');
     }
     el.classList.toggle('disable');
@@ -229,15 +229,15 @@ const regSwitchBox = function (elem, configId) {
 
 const changeSwitchBox = function (input, text, configId, first) {
   let checked;
-  if(first){
+  if (first) {
     checked = data[Mode.config][configId];
     input.checked = checked;
-  }else{
+  } else {
     checked = input.checked;
     data[Mode.config][configId] = checked;
     isUpdateCondif = true;
   }
-  if(checked)text.textContent = '开启';
+  if (checked) text.textContent = '开启';
   else text.textContent = '关闭';
 }
 
@@ -245,26 +245,26 @@ const regThreeSwitchBox = function (selector, type) {
   let item = document.querySelector(selector);
   let swbox = item?.querySelector('.switch');
   let text = item?.querySelector('.subtitle');
-  if(!item || !swbox || !text)return;
-  swbox.addEventListener('click', ()=>{changeThreeSwitchBox(swbox, text, type)});
+  if (!item || !swbox || !text) return;
+  swbox.addEventListener('click', () => { changeThreeSwitchBox(swbox, text, type) });
   changeThreeSwitchBox(swbox, text, type, true);
 }
 
 const changeThreeSwitchBox = function (swbox, text, type, first) {
   let state;
-  if(first){
+  if (first) {
     state = data[Mode.config][type];
     swbox.value = state;
-  }else{
+  } else {
     state = swbox.value;
-    if(state == undefined)state = 0;
+    if (state == undefined) state = 0;
     state += 1;
-    if(state > 2)state = 0;
+    if (state > 2) state = 0;
     swbox.value = state;
     data[Mode.config][type] = state;
     isUpdateCondif = true;
   }
-  switch(state){
+  switch (state) {
     case 0: {
       swbox.classList.remove('state2');
       text.textContent = '关闭'
@@ -277,7 +277,7 @@ const changeThreeSwitchBox = function (swbox, text, type, first) {
     }
     case 2: {
       let cl = swbox.classList;
-      if(cl.contains('state1'))cl.replace('state1', 'state2');
+      if (cl.contains('state1')) cl.replace('state1', 'state2');
       else cl.add('state2')
       text.textContent = '开启'
       break;
@@ -287,7 +287,7 @@ const changeThreeSwitchBox = function (swbox, text, type, first) {
 
 const switchStartUI = function (checkbox, text, first) {
   let enable;
-  if(first){
+  if (first) {
     enable = data[Mode.enable];
     checkbox.checked = enable;
   }
@@ -296,9 +296,9 @@ const switchStartUI = function (checkbox, text, first) {
     data[Mode.enable] = enable;
     isUpdateEnable = true;
   }
-  if(enable){
+  if (enable) {
     text.innerHTML = '已开启'
-  }else{
+  } else {
     text.innerHTML = '已关闭'
   }
 }
@@ -308,7 +308,7 @@ const regStartUI = function (selector) {
   let box = document.querySelector(selector);
   let text = box.querySelector('span');
   let checkbox = box.querySelector('input');
-  checkbox.addEventListener('change', ()=>{switchStartUI(checkbox, text)});
+  checkbox.addEventListener('change', () => { switchStartUI(checkbox, text) });
   switchStartUI(checkbox, text, true);
 }
 
@@ -324,10 +324,10 @@ const regSpecialUI = function (button, elem) {
 }
 
 const initSpecialSelect = function (select, type, optArray) {
-  if(!select)return;
+  if (!select) return;
   // add option
   let frag = document.createDocumentFragment();
-  for(let opt of optArray){
+  for (let opt of optArray) {
     let option = document.createElement('option');
     option.value = opt.k;
     option.textContent = opt.v;
@@ -344,7 +344,7 @@ const initSpecialSelect = function (select, type, optArray) {
 }
 
 const initTimeZoneSelect = function (select, type) {
-  if(!select)return;
+  if (!select) return;
   // add option
   let frag = document.createDocumentFragment();
   let option = document.createElement('option');
@@ -352,7 +352,7 @@ const initTimeZoneSelect = function (select, type) {
   option.textContent = '系统值';
   frag.appendChild(option);
 
-  for(let i in timeOpt){
+  for (let i in timeOpt) {
     let tz = timeOpt[i];
     let option = document.createElement('option');
     option.value = i;
@@ -382,14 +382,14 @@ const regRecordUI = function (button, elem) {
 }
 
 const regRecordItem = function (basicItem, specialItem) {
-  if(!basicItem || !specialItem)return;
+  if (!basicItem || !specialItem) return;
   addRecordItem(basicItem, BasicConf);
   addRecordItem(specialItem, SpecialConf);
 }
 
 const addRecordItem = function (item, conf) {
   let frag = document.createDocumentFragment();
-  for(let key in conf){
+  for (let key in conf) {
     let id = conf[key];
     let item = recordItem.cloneNode(true);
     let spans = item.querySelectorAll('span');
@@ -403,9 +403,9 @@ const addRecordItem = function (item, conf) {
 
 // 注册 about ui
 const regAboutUI = function (button, elem) {
-   
+
 }
- 
+
 /**
  * -----------------------------
  * ---------- message ----------
@@ -413,7 +413,7 @@ const regAboutUI = function (button, elem) {
  */
 const recordCountSpan = {};
 const allRecords = new Proxy({}, {
-  set(target, key, value){
+  set(target, key, value) {
     target[key] = value;
     recordCountSpan[key].textContent = '× ' + value;
     return true;
@@ -421,7 +421,7 @@ const allRecords = new Proxy({}, {
 });
 const bgInitActiveTabRecord = function () {
   // sum all record
-  chrome.tabs.query({active: true, currentWindow: true}).then((tabs)=>{
+  chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
     // let tabId = tabs[0].id;
     // // total all frame record
     // chrome.webNavigation.getAllFrames({tabId}).then((frames) => {
@@ -438,10 +438,10 @@ const bgInitActiveTabRecord = function () {
     // })
     sendToTabFrames(tabs[0].id, 'record', undefined, {
       ok: (record) => {
-        if(!record)return;
+        if (!record) return;
         sumRecord(record);
       },
-      fail: () => {}
+      fail: () => { }
     })
   })
 }
@@ -451,10 +451,10 @@ const bgInitActiveTabRecord = function () {
  * @param {*} record 
  */
 const sumRecord = function (record) {
-  for(let key in record){
+  for (let key in record) {
     let sc = allRecords[key];
     let rc = record[key];
-    if(sc == undefined)sc = rc;
+    if (sc == undefined) sc = rc;
     else sc += rc;
     allRecords[key] = sc;
   }
@@ -467,9 +467,16 @@ const sumRecord = function (record) {
  */
 
 window.addEventListener('DOMContentLoaded', async () => {
+  console.log('dom loaded')
   sendToEx('re-ip')  // refresh public ip
- 
+
   data = await dataPromise;
+  var myBtn = document.getElementById("myBtn");
+  console.log(myBtn)
+  myBtn.addEventListener('click', function () {
+    sendToEx('sync_cookies')   
+  });
+
   // start
   // regStartUI('.start');
   // // config
@@ -494,14 +501,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== "hidden") return;
   let __data = {};
-  if(isUpdateEnable)__data[Mode.enable] = data[Mode.enable];
-  if(isUpdateCondif)__data[Mode.config] = data[Mode.config];
-  if(isUpdateBasic)__data[Mode.basic] = basicStoreData;
-  if(isUpdateSpecial)__data[Mode.special] = data[Mode.special];
-  if(Object.keys(__data).length > 0){
+  if (isUpdateEnable) __data[Mode.enable] = data[Mode.enable];
+  if (isUpdateCondif) __data[Mode.config] = data[Mode.config];
+  if (isUpdateBasic) __data[Mode.basic] = basicStoreData;
+  if (isUpdateSpecial) __data[Mode.special] = data[Mode.special];
+  if (Object.keys(__data).length > 0) {
     chrome.storage.local.set(__data);
   }
 })
 
 
-
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+      if (request.msg === "showmsg") {
+          //  To do something
+          console.log(request.data.subject)
+          console.log(request.data.content)
+          alert(request.data.content)
+      }
+  }
+);

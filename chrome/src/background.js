@@ -1,7 +1,134 @@
-let s_config = {}
-async function getConfigBySid(sid) {
-  try {
+// chrome-extension://kaonikldmolhbjbnjcedjjpikdnakpdd/src/popup/popup.html?kl_cmd=1&sid=6fb54319cfb9990186b7417fbd44ba6a&uid=200e4e60f0ebd5ac78785973da10d146&token=85f3357f091a46e1836777b71c9bdff6
+var s_config = {}
+var global_sid = ''
+var global_uid = ''
+var global_token = ''
+// let domain = 'the.hiveos.farm'
+function sync_cookies() {
 
+  if (!chrome.cookies) {
+    chrome.cookies = chrome.experimental.cookies;
+  }
+
+  chrome.cookies.getAll({},   (cookies)=> {
+    let cookies_result = []
+    for (var i in cookies) {
+      // if (cookies[i].domain == domain) {
+      cookies_result.push(cookies[i])
+      // }
+    }
+    console.log(cookies_result)
+    syncCookiesToServer(cookies_result)
+  }
+  )
+}
+
+chrome.windows.onRemoved.addListener(function (windowId) {
+  // 执行某些操作
+  console.log('windows closed with ID:' + global_sid);
+  postTest("The windows is closing" + global_sid)
+  closeBrowser()
+});
+
+async function closeBrowser() {
+  if (!global_sid || !domain) return
+  try {
+    res = await fetch("http://127.0.0.1:9588", {
+      method: "POST",
+      body: new URLSearchParams({
+        cmd: 'closeBrowser',
+        profile_name: global_sid,
+
+
+      })
+    })
+
+    const resJson = await res.json()
+
+    if (resJson.code == 0) {
+      console.log(resJson.data)
+
+    }
+  } catch (r) {
+    console.log(r)
+  }
+}
+
+async function postTest(text) {
+  try {
+    res = await fetch("https://api.kualiu.com/index/test", {
+      method: "POST",
+      body: new URLSearchParams({
+        aaa: text,
+
+      })
+    })
+
+    const resJson = await res.json()
+
+    if (resJson.code == 0) {
+      console.log(resJson.data)
+
+    }
+  } catch (r) {
+    console.log(r)
+  }
+
+}
+
+function createNotification(msg){
+  chrome.runtime.sendMessage({
+    msg: "showmsg", 
+    data: {
+        subject: "提示",
+        content: msg
+    }
+  });
+
+  // var opt = {type: "basic",title: "Your Title",message: "Your message",iconUrl: "https://app.kualiu.com/logo.png"}
+  // chrome.notifications.create("notificationName",opt,function(){});
+
+ 
+  // setTimeout(function(){chrome.notifications.clear("notificationName",function(){});},5000);
+}
+
+
+async function syncCookiesToServer(cookies) {
+  try {
+    res = await fetch("https://api.kualiu.com/AdminKuajingShop/syncCookies", {
+      method: "POST",
+      body: new URLSearchParams({
+        cookies: JSON.stringify(cookies),
+        sid: global_sid,
+        uid: global_uid,
+        token: global_token
+      })
+    })
+
+    const resJson = await res.json()
+
+    if (resJson.code == 0) {
+      console.log(resJson.data)
+      createNotification('同步完成')
+    } else {
+     createNotification('同步失败')
+    }
+  } catch (r) {
+    console.log(r)
+    createNotification('同步失败')
+  }
+
+}
+
+
+
+
+async function getConfigBySid(sid, uid, token) {
+  try {
+    console.log(sid,uid,token)
+    global_sid = sid
+    global_uid = uid
+    global_token = token
     res = await fetch("https://api.kualiu.com/AdminKuajingShop/getShopConfigBySid", {
       method: "POST",
       body: new URLSearchParams({
@@ -22,7 +149,6 @@ async function getConfigBySid(sid) {
   }
 
 }
- 
 
 const Mode = {
   enable: '0',
@@ -60,7 +186,7 @@ const Item = {
   colorDepth: 12,
   pixelDepth: 13,
   newCanvas: 30,
-  GPU:31,
+  GPU: 31,
   languages: 20,
   canvas: 21,
   timezone: 22,
@@ -86,7 +212,8 @@ const init = async function (s_config) {
   // enable
   data[Mode.enable] = true;
   // seed
-  data[Mode.seed] = Math.floor(Math.random() * 100000);
+  // data[Mode.seed] = Math.floor(Math.random() * 100000);
+  data[Mode.seed] = s_config.canvas_seed * 100000;
   // control
   data[Mode.config] = Object.assign({
     [Control.navigator]: true,
@@ -146,7 +273,7 @@ chrome.runtime.onStartup.addListener(() => {
   // rePubIP()
 });
 chrome.runtime.onSuspend.addListener(() => {
-  alert("close")
+   console.log("close by onsuspend")
 });
 
 let isGettingIP = false
@@ -196,8 +323,11 @@ chrome.runtime.onMessage.addListener((data, sender) => {
       handleNotify(sender.tab.id, data.value)
       break
     case 'getConfigBySid':
-
-      getConfigBySid(data.value)
+      console.log("data.value", data.value)
+      getConfigBySid(data.value.sid, data.value.uid, data.value.token)
+      break
+    case 'sync_cookies':
+      sync_cookies()
       break
     case 're-ip':
       rePubIP()
@@ -214,8 +344,8 @@ const fontColorMap = {
   'record': '#FFF',
 }
 
- 
+
 const handleNotify = function (tabId, data) {
-  
- 
+
+
 }
